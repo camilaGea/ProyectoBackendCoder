@@ -1,10 +1,7 @@
 import fs from 'fs';
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import  __dirname  from '../utils.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const filePath = path.join(__dirname, "../files/productos.json");
+const filePath = __dirname + '/files/productos.json'
 
 export default class ProductManager{
     constructor(){
@@ -13,15 +10,14 @@ export default class ProductManager{
         this.path = filePath
     }
 
-    saveProduct = async () => {
+    saveProduct = async (products) => {
         try{
-            const productData = JSON.stringify(this.products, null , '\t');
+            const productData = JSON.stringify(products, null , '\t');
             await fs.promises.writeFile(this.path, productData) //guardo los productos
         } catch(error){
             console.log(error)
         }
     }
-
 
     getProducts = async() => {
         if(fs.existsSync(this.path)){
@@ -37,51 +33,54 @@ export default class ProductManager{
 
 
     addProduct = async(title, description, price, thumbnail, code, stock, category, status) =>{
-        
-        if(!title || !description || !price || !code || !stock || !category){
-            console.log('No ha llenado los datos (titulo-descripcion-precio-ruta-codigo-stock)')
-            return
+        try{
+            const productos = await this.getProducts();
+            if(!title || !description || !price || !code || !stock || !category){
+                //console.log('No ha llenado los datos (titulo-descripcion-precio-ruta-codigo-stock)')
+                return { status: "error", message: "No ha llenado los datos" }
+            }
+            const codProduct = productos.find(product => product.code === code )
+            if(codProduct){
+                //console.log(`El codigo ${code} del producto ${title} ya esta registrado`)
+                return { status: "error", message: "codigo repetido!" }
+            }
+            if(status === undefined){
+                status = true
+            }
+            const product = {
+                title: title,
+                description: description,
+                price: price,
+                thumbnail: thumbnail,
+                code: code,
+                status: status,
+                stock: stock,
+                category: category,
+                id: this.idProduct ++
+            }
+            
+            productos.push(product);
+            
+            //guardado
+            const productData = JSON.stringify(productos, null , '\t');
+            await fs.promises.writeFile(this.path, productData)
+            return `Se agrego el producto ${title} `
+            //console.log(`El producto ${title} agregado correctamente`)
+        }catch(error){
+            return error
         }
-
-        const codProduct = this.products.find(product => product.code === code )
-
-        if(codProduct){
-            console.log(`El codigo ${code} del producto ${title} ya esta registrado`)
-            return
-        }
-        if(status === undefined){
-            status = true
-        }
-
-        const product = {
-            title: title,
-            description: description,
-            price: price,
-            thumbnail: thumbnail,
-            code: code,
-            status: status,
-            stock: stock,
-            category: category,
-            id: this.idProduct ++
-        }
-        
-        this.products.push(product);
-        console.log(`El producto ${title} agregado correctamente`)
-
-        //guardado
-        this.saveProduct()
     }
 
-     getProductsById= async(id) =>{
-        const productData = await fs.promises.readFile(this.path, "utf-8");
-        const prod = JSON.parse(productData);
-        const productoId = prod.find(product => product.id == id)
-        if(productoId){
+    getProductsById= async(id) =>{
+        try{
+            //const productData = await fs.promises.readFile(this.path, "utf-8");
+            //const prod = JSON.parse(productData);
+            prod = await this.getProducts();
+            const productoId = prod.find(product => product.id == id)
             return productoId
-            //console.log( productoId)
-        }else{
-            return `El producto con ID: ${id} no encontrado`
-            //console.log('Not found')
+
+        }catch (error){
+            return error
         }
     }
 
@@ -120,7 +119,9 @@ export default class ProductManager{
             return
         }
         const indice = prod.indexOf(producto);
-        this.products.splice(indice,1)       
-        this.saveProduct()
+        prod.splice(indice,1)  
+        const productData = JSON.stringify(prod, null , '\t');
+        await fs.promises.writeFile(this.path, productData)  
+        //this.saveProduct(prod)
     }
 }
