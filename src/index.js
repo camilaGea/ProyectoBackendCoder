@@ -4,7 +4,7 @@ import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/cart.router.js"
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import ProductManager from "./manager/productManager.js"
 
 const pm = new ProductManager();
@@ -24,9 +24,10 @@ app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 
-const socketServer = new Server(server)
+const io = new Server(server)
+let messages = []
 
-socketServer.on('connection',  socket =>{
+io.on('connection',  socket =>{
     console.log('Usuario conectado');
 
     //agregar producto
@@ -56,4 +57,14 @@ socketServer.on('connection',  socket =>{
         }
     }) 
 
+    //chat
+
+    socket.on("message", data => {
+        messages.push(data)
+        io.emit("messageLogs", messages)
+    })
+
+    socket.on("authenticated", data =>{
+        socket.broadcast.emit("newUserConnected", data) //el broadcast envia el mesaje a todos los usuarios conectados menos a si mismo
+    })
 })
