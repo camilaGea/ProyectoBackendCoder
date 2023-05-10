@@ -1,15 +1,21 @@
 import express from "express";
 import handlebars from 'express-handlebars';
+import { Server, Socket } from "socket.io";
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/cart.router.js"
-import { Server, Socket } from "socket.io";
-import ProductManager from "./manager/productManager.js"
+import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
+import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
+import mongoose from "mongoose";
+//import ProductManager from "./dao/manager/productManager.js"
 
-const pm = new ProductManager();
+const pm = new ProductManagerMongo();
+const ms = new MenssageMongo();
+//const pm = new ProductManager();
 
 const PORT = 8080;
+const MONGO = 'mongodb+srv://camilagea4:tipa1527@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
 const app = express();
 const server = app.listen(PORT, ()=>{console.log('servidor funcionando en e puerto ' + PORT)});
 
@@ -25,14 +31,13 @@ app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 
 const io = new Server(server)
-let messages = []
 
 io.on('connection',  socket =>{
     console.log('Usuario conectado');
 
+    /*
     //agregar producto
     socket.on("newProduct", async(data) =>{ //escucho lo que me manda el cliente
-        //console.log('hola')
         let producto = await pm.addProduct(data.title, data.description, data.price, data.thumbnail ,data.code, data.stock,data.category, data.status)
         if (producto.status === "error"){ //si el codigo esta repetido o no cargo todos los datos
             let mens = producto.message
@@ -41,7 +46,7 @@ io.on('connection',  socket =>{
         const dataActualizada = await pm.getProducts();// cargo todo correcto
         return socketServer.emit("productAdd", dataActualizada) // envio al cliente los productos actualizados con el reciente cargado
     }) 
-
+    
     //eliminar Producto
     socket.on("productDelete", async (pid) =>{ //escucho lo que me manda el cliente
         //console.log(pid.id)
@@ -56,15 +61,28 @@ io.on('connection',  socket =>{
             socketServer.emit("newList", { status: "error", message: `No se encontro el producto con id ${pid.id}` })
         }
     }) 
-
+    */
     //chat
-
-    socket.on("message", data => {
-        messages.push(data)
+    
+    socket.on("message", async(data)  => {
+        const NewMessage = await ms.addMenssage(data); 
+        const messages = await ms.getMenssage();
         io.emit("messageLogs", messages)
     })
 
     socket.on("authenticated", data =>{
         socket.broadcast.emit("newUserConnected", data) //el broadcast envia el mesaje a todos los usuarios conectados menos a si mismo
     })
+    
 })
+
+const connectDB = async () => {
+    try{
+        await mongoose.connect(MONGO);
+        console.log("Conexion con DB correcta")
+    }catch (error){
+        console.log(`Fallo al conectar con DB. Error: ${error}`)
+    }
+}
+
+connectDB();

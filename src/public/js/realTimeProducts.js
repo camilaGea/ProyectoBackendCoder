@@ -35,9 +35,9 @@ socket.on("productAdd", (data) => {
         return console.log(data.message);
     }
     let list = "";
-    data.forEach(({ id, title, price, code, stock, category, description, status }) => {
+    data.forEach(({ _id, title, price, code, stock, category, description, status }) => {
         list += `<tr>
-        <td>${id}</td>
+        <td>${_id}</td>
         <td>${title}</td>
         <td>${price}</td>
         <td>${code}</td>
@@ -72,7 +72,7 @@ const id = document.getElementById("deleteProd");
 
 formDelete.addEventListener("submit", (evt) => {
     evt.preventDefault();
-    socket.emit("productDelete", { id: id.value }); //envio el id producto a eliminar desde el Cliente al Servidor
+    socket.emit("productDelete", { _id: id.value }); //envio el id producto a eliminar desde el Cliente al Servidor
 });
 
 socket.on("newList", (data) => { //escucho lo que me envia el servidor 
@@ -80,10 +80,10 @@ socket.on("newList", (data) => { //escucho lo que me envia el servidor
         return console.log(data.message);
     }
     let list = "";
-    data.forEach(({ id, title, price, code, stock, category, description, status }) => {
+    data.forEach(({ _id, title, price, code, stock, category, description, status }) => {
         list += `
                     <tr>
-                    <td>${id}</td>
+                    <td>${_id}</td>
                     <td>${title}</td>
                     <td>${price}</td>
                     <td>${code}</td>
