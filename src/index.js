@@ -15,7 +15,7 @@ const ms = new MenssageMongo();
 //const pm = new ProductManager();
 
 const PORT = 8080;
-const MONGO = 'mongodb+srv://camilagea4:tipa1527@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
+const MONGO = 'mongodb+srv://camilagea4:<password>@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
 const app = express();
 const server = app.listen(PORT, ()=>{console.log('servidor funcionando en e puerto ' + PORT)});
 
