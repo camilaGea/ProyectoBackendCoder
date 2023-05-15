@@ -1,10 +1,25 @@
-import { Router } from 'express';
+import { Router, json } from 'express';
 import ProductManagerMongo from '../dao/managerMongo/productMongo.js'
+//import productosModel from "../dao/models/product.model.js"
 //import ProductManager from '../dao/manager/productManager.js';
 
 const router = Router();
 const productManager = new ProductManagerMongo()
 //const productManager = new ProductManager();
+
+
+router.get('/', async (req,res) =>{
+    try{
+        let { limit,page = 1,category,disp,sort } = req.query;
+
+        let products = await productManager.getProducts(limit,page,category,disp,sort);
+        res.send({status: "Sucess", products})
+        
+        //console.log(products);
+    }catch (error){
+        res.status(500).send({status:"error", error:error.message})
+    }
+})
 
 router.get('/:id', async (req,res)=>{
     try{
@@ -15,25 +30,6 @@ router.get('/:id', async (req,res)=>{
     } catch (error) {
         res.status(500).send({status:"error", error:error.message})
     }  
-})
-
-router.get('/', async (req,res) =>{
-    try{
-        const limit = req.query.limit;
-        const products = await productManager.getProducts();
-        //console.log(limit)
-        
-        if(limit){
-            const productLimit = products.slice(0, limit)
-            res.send({mensaje: "productos limit",products: productLimit})
-            return
-        }
-        
-        res.send( {mensaje:"Todos los productos", products: products})
-    }catch (error){
-        res.status(500).send({status:"error", error:error.message})
-    }
-
 })
 
 router.post('/', async (req,res)=> {
