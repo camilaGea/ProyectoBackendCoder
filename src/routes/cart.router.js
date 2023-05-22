@@ -5,7 +5,8 @@ import cartModel from "../dao/models/cart.model.js";
 //import CartManager from "../dao/managerFileSystem/cartManager.js";
 
 const router = Router()
-const carts = new CartMongo()
+export const carts = new CartMongo()
+const products = new ProductManagerMongo()
 const products = new ProductManagerMongo()
 //const carts = new CartManager()
 
@@ -55,7 +56,19 @@ router.post('/:cid/product/:pid', async (req,res)=> {
 router.delete('/:cid/products/:pid', async (req,res) =>{
     //deberá eliminar del carrito el producto seleccionado.
     try{
-        const result = await carts.deletePtroductInCart(cid,pid);
+        const cid =  req.params.cid;
+        const pid = req.params.pid;
+        const product = await products.getProductsId(pid)
+        const cart = await carts.getCartById(cid);
+
+        if(!cart || cart.status === "error"){
+            return res.status(404).send({status: "error", error: `No existe el carrito id ${cid}` })
+        }
+        if(!product || product.status === "error"){
+            return res.status(404).send({status: "error", error: `No existe el producto id ${pid}` })
+        }
+        const result = await carts.deleteProductInCart(cid,pid);
+
         res.status(200).send({status:"sucess", result})
     }catch(error){
         res.status(500).send({status:"error", error:error.message})

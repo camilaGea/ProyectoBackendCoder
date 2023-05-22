@@ -20,7 +20,7 @@ export default class CartMongo{
 
     async getCartById(cid){
         try{
-            return await cartModel.findOne({_id: cid})
+            return await cartModel.findOne({_id: cid}).lean()
         }catch(error){
             return { status: "error", error: error }; 
         }
