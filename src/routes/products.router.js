@@ -1,10 +1,44 @@
 import { Router } from 'express';
 import ProductManagerMongo from '../dao/managerMongo/productMongo.js'
+import productosModel from "../dao/models/product.model.js"
 //import ProductManager from '../dao/manager/productManager.js';
 
 const router = Router();
 const productManager = new ProductManagerMongo()
 //const productManager = new ProductManager();
+
+
+router.get('/', async (req,res) =>{
+    try{
+        const products = await productManager.getProducts();
+        let { limit,page,category,disp,sort } = req.query;
+        console.log(limit)
+        console.log(sort)
+        console.log(query)
+
+        const result = await productosModel.aggregate([
+            {$match: {category: "oro"}},
+            {$group: {_id:'$category', products: {$push: "$$ROOT"}}},
+            {$sort:{_id: -1}},
+            {$limit: 2}
+        ])
+
+        console.log(JSON.stringify(result, null, '\t'))
+        /*
+        if(!limit){
+            const productLimit = products.slice(0, 10)
+            res.send({mensaje: "productos limit",products: productLimit})
+            return
+        }
+        const productLimit = products.slice(0, limit)
+        */
+        res.send({mensaje: "productos limit",products: products})
+    }catch (error){
+        res.status(500).send({status:"error", error:error.message})
+    }
+
+})
+
 
 router.get('/:id', async (req,res)=>{
     try{
@@ -15,25 +49,6 @@ router.get('/:id', async (req,res)=>{
     } catch (error) {
         res.status(500).send({status:"error", error:error.message})
     }  
-})
-
-router.get('/', async (req,res) =>{
-    try{
-        const limit = req.query.limit;
-        const products = await productManager.getProducts();
-        //console.log(limit)
-        
-        if(limit){
-            const productLimit = products.slice(0, limit)
-            res.send({mensaje: "productos limit",products: productLimit})
-            return
-        }
-        
-        res.send( {mensaje:"Todos los productos", products: products})
-    }catch (error){
-        res.status(500).send({status:"error", error:error.message})
-    }
-
 })
 
 router.post('/', async (req,res)=> {
