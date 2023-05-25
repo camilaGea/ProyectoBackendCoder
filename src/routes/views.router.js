@@ -10,9 +10,10 @@ const pm = new ProductManagerMongo();
 
 router.get('/products', async (req,res) =>{
     //para visualizar todos los productos con su respectiva paginación.
+    let user = req.session.user;
     let { limit,page = 1,category,disp,sort } = req.query;
     const productos = await pm.getProducts(limit,page,category,disp,sort);
-    res.render('products', {productos});
+    res.render('products', {productos ,user});
 })
 
 router.get('/carts/:cid', async (req,res) =>{
@@ -24,10 +25,23 @@ router.get('/carts/:cid', async (req,res) =>{
 
 
 router.get('/', async (req,res)=>{
+    res.render('login')
+    /*
     let { limit,page } = req.query;
     const {docs}= await pm.getProducts(limit, page);
     const productos = docs
     res.render('home', {productos});
+    */
+
+})
+
+router.get('/login', async (req,res)=>{
+    res.render('login')
+})
+
+
+router.get('/register', async (req,res)=>{
+    res.render('register')
 })
 
 

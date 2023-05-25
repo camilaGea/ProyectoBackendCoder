@@ -2,9 +2,13 @@ import express from "express";
 import handlebars from 'express-handlebars';
 import { Server, Socket } from "socket.io";
 import __dirname from './utils.js';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/cart.router.js"
+import sessionsRouter from "./routes/sessions.router.js"
 import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
 import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
@@ -25,10 +29,20 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+app.use(session({
+    store: new MongoStore({
+        mongoUrl: MONGO,
+        ttl:3600
+    }),
+    secret:'CoderSecret',
+    resave:false,
+    saveUninitialized:false
+}))
 
 app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/sessions', sessionsRouter)
 
 const io = new Server(server)
 
