@@ -11,11 +11,19 @@ router.post('/register', async (req, res) =>{
     if(exist){
         return res.status(400).send({status:"error", error:"User already exists"});
     }
-    const user = {
-        nombre, apellido, email, edad, password
-    };
+    if (email == 'adminCoder@coder.com' && password == 'adminCod3r123') {
+        const user = {
+            nombre, apellido, email, edad, password , rol: 'admin'
+        };
+        const result = await userModel.create(user);
+    }else{
+        const user = {
+            nombre, apellido, email, edad, password 
+        };
+        const result = await userModel.create(user);
+    }
+        
 
-    const result = await userModel.create(user);
     res.send({status:"succes", message:"User registered"});
 
 })
@@ -27,11 +35,12 @@ router.post('/login', async (req,res)=>{
     if(!user){
         return res.status(400).send({status:"error", error:"Datos incorrectos"})
     }
-  
+
     req.session.user = {
         nombre: `${user.nombre} ${user.apellido}`,
         email: user.email,
-        edad: user.edad
+        edad: user.edad,
+        rol: user.rol
     }
     res.send({status:"success", payload:req.res.user, message:"Primer logueo!!"})
     
