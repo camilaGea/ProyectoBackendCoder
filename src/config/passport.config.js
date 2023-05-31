@@ -83,28 +83,20 @@ const initializePassport = () => {
     }))
 
     passport.use('github', new GitHubStrategy({
-        /*
-        clientID:'Iv1.3c0456ec3ee7ed36',
-        clientSecret:'f56125140c915acb3b1d7c97abbfb44cb1a37f7d',
-        callbackURL: 'http://localhost:8080/api/sessions/githubcallback',
-        */
-
         clientID:'Iv1.3c0456ec3ee7ed36',
         clientSecret:'183cee86e9c62e3c301b0123c9712cfab7ffda93',
-        callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
+        callbackURL: 'http://localhost:8080/api/sessions/githubcallback',
+        scope: ["user:email"],
     }, async (accesToken, refreshToken,profile,done)=>{
         try {
-            
             console.log('profile' + profile._json); //vemos toda la info que viene del profile
-            let user = await userModel.findOne({email: profile._json.email})
+            const email = profile.emails[0].value;
+            let user = await userModel.findOne({email}).exec()
             if(!user){
-
-                const email = profile._json.email == null ?  profile._json.username : null;
-
                 const newUser = {
                         nombre: profile._json.name,
                         apellido:'',
-                        email: profile._json.email,
+                        email: email,
                         edad: 18,
                         password: '',
                 }

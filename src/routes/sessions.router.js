@@ -38,7 +38,7 @@ router.get('/logout', (req,res)=>{
     })
 })
 
-router.get('/github', passport.authenticate('github', {scope:['user:email']}), async (req,res)=>{})
+router.get('/github', passport.authenticate('github'), async (req,res)=>{})
 
 router.get('/githubcallback', passport.authenticate('github',{failureRedirect:'/login'}), async (req,res)=>{
 
