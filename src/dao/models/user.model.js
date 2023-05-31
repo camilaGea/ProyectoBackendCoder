@@ -6,15 +6,15 @@ const userCollection = 'users'
 const schema = new mongoose.Schema({
     nombre:{
         type: String,
-        required: true
+        
     },
     apellido:{
         type: String,
-        required: true
+        
     },
     edad:{
         type: Number,
-        required: true
+        
     },
     rol:{
         type: String,
@@ -22,12 +22,12 @@ const schema = new mongoose.Schema({
     },
     email:{
         type: String,
-        required: true,
+        
         unique: true
     },
     password:{
         type: String,
-        required: true
+        
     }
 })
 
