@@ -8,6 +8,7 @@ import cartRouter from "./routes/cart.router.js"
 import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
 import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 //import ProductManager from "./dao/manager/productManager.js"
 
 const pm = new ProductManagerMongo();
@@ -25,6 +26,7 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+app.use(cookieParser())
 
 app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
