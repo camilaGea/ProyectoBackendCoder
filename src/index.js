@@ -2,13 +2,19 @@ import express from "express";
 import handlebars from 'express-handlebars';
 import { Server, Socket } from "socket.io";
 import __dirname from './utils.js';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from "passport";
+
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/cart.router.js"
+import sessionsRouter from "./routes/sessions.router.js"
 import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
 import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
+import initializePassport from "./config/passport.config.js";
+
 //import ProductManager from "./dao/manager/productManager.js"
 
 const pm = new ProductManagerMongo();
@@ -16,7 +22,7 @@ const ms = new MenssageMongo();
 //const pm = new ProductManager();
 
 const PORT = 8080;
-const MONGO = 'mongodb+srv://camilagea4:tipa1527@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
+const MONGO = 'mongodb+srv://camilagea4:<password>@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
 const app = express();
 const server = app.listen(PORT, ()=>{console.log('servidor funcionando en e puerto ' + PORT)});
 
@@ -26,11 +32,24 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
-app.use(cookieParser())
+app.use(session({
+    store: new MongoStore({
+        mongoUrl: MONGO,
+        ttl:3600
+    }),
+    secret:'CoderSecret',
+    resave:false,
+    saveUninitialized:false
+}))
+initializePassport(),
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/sessions', sessionsRouter)
 
 const io = new Server(server)
 
