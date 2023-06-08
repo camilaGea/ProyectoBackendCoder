@@ -7,7 +7,6 @@ import cartModel from "../dao/models/cart.model.js";
 const router = Router()
 export const carts = new CartMongo()
 const products = new ProductManagerMongo()
-const products = new ProductManagerMongo()
 //const carts = new CartManager()
 
 router.post('/', async (req,res)=> {
