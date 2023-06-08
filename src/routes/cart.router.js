@@ -7,6 +7,7 @@ import cartModel from "../dao/models/cart.model.js";
 const router = Router()
 export const carts = new CartMongo()
 const products = new ProductManagerMongo()
+const products = new ProductManagerMongo()
 //const carts = new CartManager()
 
 router.post('/', async (req,res)=> {
@@ -66,8 +67,8 @@ router.delete('/:cid/products/:pid', async (req,res) =>{
         if(!product || product.status === "error"){
             return res.status(404).send({status: "error", error: `No existe el producto id ${pid}` })
         }
-
         const result = await carts.deleteProductInCart(cid,pid);
+
         res.status(200).send({status:"sucess", result})
     }catch(error){
         res.status(500).send({status:"error", error:error.message})

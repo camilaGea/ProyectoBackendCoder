@@ -14,6 +14,7 @@ import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
 import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
 import initializePassport from "./config/passport.config.js";
+
 //import ProductManager from "./dao/manager/productManager.js"
 
 const pm = new ProductManagerMongo();
@@ -43,6 +44,7 @@ app.use(session({
 initializePassport(),
 app.use(passport.initialize())
 app.use(passport.session())
+
 
 app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
