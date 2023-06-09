@@ -5,11 +5,14 @@ import __dirname from './utils.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from "passport";
+import cookieParser from 'cookie-parser';
 
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/cart.router.js"
 import sessionsRouter from "./routes/sessions.router.js"
+import loginJw from "./routes/loginJw.router.js"
+
 import ProductManagerMongo from "./dao/managerMongo/productMongo.js";
 import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
@@ -21,7 +24,7 @@ const pm = new ProductManagerMongo();
 const ms = new MenssageMongo();
 //const pm = new ProductManager();
 
-const PORT = 8080;
+const PORT = 3000;
 const MONGO = 'mongodb+srv://camilagea4:tipa1527@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
 const app = express();
 const server = app.listen(PORT, ()=>{console.log('servidor funcionando en e puerto ' + PORT)});
@@ -41,18 +44,22 @@ app.use(session({
     resave:false,
     saveUninitialized:false
 }))
+
 initializePassport(),
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
+app.use(cookieParser());
+app.use(passport.session());
 
 
 app.use('/', viewsRouter);
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
-app.use('/api/sessions', sessionsRouter)
+//app.use('/api/sessions', sessionsRouter)
+app.use('/api/jw',loginJw )
 
 const io = new Server(server)
 
+//socket 
 io.on('connection',  socket =>{
     console.log('Usuario conectado');
 

@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import { Schema} from "mongoose";
 
 
 const userCollection = 'users'
 
-const schema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     nombre:{
         type: String,
         require: true
@@ -28,9 +29,18 @@ const schema = new mongoose.Schema({
     password:{
         type: String,
         require: true
-    }
+    },
+    cart: {
+        type: Schema.Types.ObjectId,
+        ref: 'carts',
+        require: true
+    },
 })
 
-const userModel = mongoose.model(userCollection, schema)
+userSchema.pre('find', function(){
+    this.populate('cart')
+})
+
+const userModel = mongoose.model(userCollection, userSchema)
 
 export default userModel;

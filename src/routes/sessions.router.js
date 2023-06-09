@@ -41,11 +41,12 @@ router.get('/logout', (req,res)=>{
 router.get('/github', passport.authenticate('github'), async (req,res)=>{})
 
 router.get('/githubcallback', passport.authenticate('github',{failureRedirect:'/login'}), async (req,res)=>{
-
     req.session.user = req.user;
     res.redirect('http://localhost:8080/products')
-
 })
 
+router.get('/current', passport.authenticate('jwt', {session:false}), (req,res)=>{
+    res.send({status:"success", payload:req.user})
+})
 
 export default router;
