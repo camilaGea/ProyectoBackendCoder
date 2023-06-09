@@ -12,6 +12,7 @@ const products = new ProductManagerMongo()
 router.post('/', async (req,res)=> {
     try {
         const carrito = await carts.addCart();
+        console.log(carrito._id.toString())
         res.status(201).send({status:"sucess", carrito})
     } catch (error) {
         res.status(500).send({status:"error", error:error.message})
