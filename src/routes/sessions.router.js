@@ -45,8 +45,19 @@ router.get('/githubcallback', passport.authenticate('github',{failureRedirect:'/
     res.redirect('http://localhost:8080/products')
 })
 
+/*
 router.get('/current', passport.authenticate('jwt', {session:false}), (req,res)=>{
     res.send({status:"success", payload:req.user})
+})
+*/
+router.get('/current', async (req, res) =>{
+    try {
+        let user = await userModel.findOne(req.session.email)
+        console.log(user)
+        res.send(user)
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 export default router;
