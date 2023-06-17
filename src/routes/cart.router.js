@@ -7,12 +7,12 @@ import cartModel from "../dao/models/cart.model.js";
 const router = Router()
 export const carts = new CartMongo()
 const products = new ProductManagerMongo()
-const products = new ProductManagerMongo()
 //const carts = new CartManager()
 
 router.post('/', async (req,res)=> {
     try {
         const carrito = await carts.addCart();
+        console.log(carrito._id.toString())
         res.status(201).send({status:"sucess", carrito})
     } catch (error) {
         res.status(500).send({status:"error", error:error.message})

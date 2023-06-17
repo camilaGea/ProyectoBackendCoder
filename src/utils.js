@@ -15,24 +15,23 @@ export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSalt
 export const validatePassword = (password, user) => bcrypt.compareSync(password, user.password);
 
 //JSON Web Tokens JWT functinos:
-export const PRIVATE_KEY = "CoderhouseBackendCourseSecretKeyJWT";
+export const PRIVATE_KEY = "coderSecret";
+
 export const generateJWToken = (user) => {
     return jwt.sign({user}, PRIVATE_KEY, {expiresIn: '120s'});
 };
-export const authToken = (req, res, next) => {
-    //El JWT token se guarda en los headers de autorización.
+
+export const authToken = (req,res,next) =>{
     const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).send({error: "User not authenticated or missing token."});
+    const token = authHeader.split(' ')[1];
+    if(token==='null'){
+        return res.status(401).send({status:"error", error: "Error en el token."})
     }
-    const token = authHeader.split(' ')[1]; //Se hace el split para retirar la palabra Bearer.
-    //Validar token
-    jwt.verify(token, PRIVATE_KEY, (error, credentials) => {
-        if (error) return res.status(403).send({error: "Token invalid, Unauthorized!"});
-        //Token OK
+    jwt.verify(token, PRIVATE_KEY,(error, credentials)=>{
+        if(error) return res.status(401).send({status:"error", error:'Error en el token.'})
         req.user = credentials.user;
-        console.log(req.user);
         next();
-    });
-};
+    })
+}
+
 export default __dirname;
