@@ -23,34 +23,15 @@ router.get('/carts/:cid', async (req,res) =>{
     res.render('cart', {cart});
 })
 
+router.get('/', async (req,res)=>{ res.render('login')})
 
-router.get('/', async (req,res)=>{
-    res.render('login')
-    /*
-    let { limit,page } = req.query;
-    const {docs}= await pm.getProducts(limit, page);
-    const productos = docs
-    res.render('home', {productos});
-    */
+router.get('/login', async (req,res)=>{ res.render('login')})
 
-})
+router.get('/register', async (req,res)=>{ res.render('register')})
 
-router.get('/login', async (req,res)=>{
-    res.render('login')
-})
-
-
-router.get('/register', async (req,res)=>{
-    res.render('register')
-})
-
-
-router.get('/chat', async (req,res)=>{
-    res.render('chat', {});
-})
+router.get('/chat', async (req,res)=>{ res.render('chat', {});})
 
 router.get('/realtimeproducts' , async (req,res)=>{
-    
     const productos = await pm.getP()
     res.render("realTimeProducts", {productos});
 })
