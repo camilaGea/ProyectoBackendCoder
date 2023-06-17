@@ -1,9 +1,11 @@
-
 import passport from 'passport'
 import local from 'passport-local'
 import userModel from '../dao/models/user.model.js'
+import CartMongo from '../dao/managerMongo/cartMongo.js'
 import GitHubStrategy from 'passport-github2';
 import {createHash, validatePassword} from '../utils.js'
+
+const carts = new CartMongo()
 
 const LocalStrategy = local.Strategy;
 
@@ -35,19 +37,15 @@ const initializePassport = () => {
                     console.log('El usuario existe');
                     return done(null,false);
                 }
-                if (email == 'adminCoder@coder.com' && password == 'adminCod3r123') {
-                    const newUser = {
-                        nombre, apellido, email, edad, password: createHash(password) , rol: 'admin'
-                    }
-                    const result = await userModel.create(newUser);
-                    return done(null, result);
-                }
-                
+                //creo el cart id
+                let cart = await carts.addCart()
+
                 const newUser = {
                     nombre, 
                     apellido, 
                     email, 
-                    edad, 
+                    edad,
+                    cart: cart._id,
                     password: createHash(password)
                 }
 
@@ -93,12 +91,15 @@ const initializePassport = () => {
             const email = profile.emails[0].value;
             let user = await userModel.findOne({email}).exec()
             if(!user){
+                //creo el cart id
+                let cart = await carts.addCart()
                 const newUser = {
                         nombre: profile._json.name,
                         apellido:'',
                         email: email,
                         edad: 18,
                         password: '',
+                        cart: cart._id
                 }
                 const result = await userModel.create(newUser);
                 done(null,result)

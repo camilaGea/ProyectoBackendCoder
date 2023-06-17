@@ -21,7 +21,7 @@ router.post('/login', passport.authenticate('login',{failureRedirect:'/faillogin
         nombre: req.user.nombre,
         email: req.user.email,
         edad: req.user.edad,
-        rol: req.user.rol
+        rol: req.user.rol,
     }
     res.send({status:"success", payload:req.user, message:"Primer logueo!!"})
 })
