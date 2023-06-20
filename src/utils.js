@@ -5,12 +5,14 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 //import multer from 'multer';
 
-export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-export const validatePassword = (password, user) => bcrypt.compareSync(password, user.password);
-
+// config Ruta absoluta
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+//Configuracion bcrypt - hash generation
+export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+// validamos la contraseña con la que esta en la DB como hash
+export const validatePassword = (password, user) => bcrypt.compareSync(password, user.password);
 
 //JSON Web Tokens JWT functinos:
 export const PRIVATE_KEY = "coderSecret";

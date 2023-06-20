@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { Schema} from "mongoose";
 
-
 const userCollection = 'users'
 
 const userSchema = new mongoose.Schema({

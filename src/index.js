@@ -6,6 +6,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from "passport";
 import cookieParser from 'cookie-parser';
+import  {config}  from "./config/config.js";
 
 import viewsRouter from './routes/views.router.js';
 import productRouter from "./routes/products.router.js"
@@ -18,14 +19,12 @@ import MenssageMongo from "./dao/managerMongo/menssageMongo.js";
 import mongoose from "mongoose";
 import initializePassport from "./config/passport.config.js";
 
-//import ProductManager from "./dao/manager/productManager.js"
 
 const pm = new ProductManagerMongo();
 const ms = new MenssageMongo();
-//const pm = new ProductManager();
 
-const PORT = 3000;
-const MONGO = 'mongodb+srv://camilagea4:tipa1527@cluster0.tuiclhb.mongodb.net/ecommerce?retryWrites=true&w=majority'
+const PORT = config.server.port
+const MONGO = config.mongo.url
 const app = express();
 const server = app.listen(PORT, ()=>{console.log('servidor funcionando en e puerto ' + PORT)});
 
@@ -35,6 +34,7 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+
 app.use(session({
     store: new MongoStore({
         mongoUrl: MONGO,

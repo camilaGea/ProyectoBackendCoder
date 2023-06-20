@@ -10,7 +10,6 @@ const JwtStrategy = jwtStrategy.Strategy;
 const ExtractJWT = jwtStrategy.ExtractJwt;
 
 
-const cart = new CartMongo()
 const LocalStrategy = local.Strategy;
 
 const initializePassport = () => {
@@ -61,10 +60,6 @@ const initializePassport = () => {
                     console.log('El usuario existe');
                     return done(null,false);
                 }
-                //creo el cart id
-                let cartUser = cart.addCart()
-                console.log(cartUser)
-                /*
                 if (email == 'adminCoder@coder.com' && password == 'adminCod3r123') {
                     const newUser = {
                         nombre, apellido, email, edad, password: createHash(password) , rol: 'admin'
@@ -72,14 +67,12 @@ const initializePassport = () => {
                     const result = await userModel.create(newUser);
                     return done(null, result);
                 }
-                */
                 
                 const newUser = {
                     nombre, 
                     apellido, 
                     email, 
-                    edad,
-                    cart: cartUser._id,
+                    edad, 
                     password: createHash(password)
                 }
 
@@ -121,7 +114,6 @@ const initializePassport = () => {
             const email = profile.emails[0].value;
             let user = await userModel.findOne({email}).exec()
             if(!user){
-                cart = cart.addCart()
                 const newUser = {
                         nombre: profile._json.name,
                         apellido:'',
@@ -129,6 +121,7 @@ const initializePassport = () => {
                         edad: 18,
                         cart: cart._id,
                         password: '',
+                        cart: cart._id
                 }
                 const result = await userModel.create(newUser);
                 done(null,result)
